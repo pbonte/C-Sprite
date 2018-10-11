@@ -48,21 +48,12 @@ public class StreamingWebSocketHandler {
 
 	@OnWebSocketMessage
 	public void onMessage(Session user, String messages) {
-		// streamingFox.addEvent(convert(message));
-		// streamingFox.addEvent(message);
 		long time0 = System.nanoTime();
 
 		if (lastTime > 0) {
 			System.out.println("Message time: " + (System.nanoTime() - lastTime));
 		}
 		counter++;
-		// String[] messageSplit = messages.split("\n");
-		// for (String message : messageSplit) {
-		// if (!message.contains("http://dbpedia.org/datatype")
-		// && !message.contains("http://www.w3.org/2001/XMLSchema#")) {
-		// counter++;
-		// String[] triple = messages.split(" ");
-		// engine.addTriple(triple[0], triple[1], triple[2]);
 		long time1 = System.nanoTime();
 		StringTokenizer st = new StringTokenizer(messages, " ");
 		String subject = st.nextToken();
@@ -75,10 +66,6 @@ public class StreamingWebSocketHandler {
 		System.out.println("Process triple time: " + (System.nanoTime() - time1));
 
 		engine.advanceTime(System.currentTimeMillis());
-		//
-		//
-		// }
-		// }
 		lastTime = System.nanoTime();
 		System.out.println("Total time: " + (System.nanoTime() - time0));
 
