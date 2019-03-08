@@ -94,7 +94,6 @@ public class CSpriteEngine {
 	public void advanceTime(long time) {
 
 	}
-
 	public void addTriple(String subject, String property, String object) {
 		if (property.equals("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")) {
 

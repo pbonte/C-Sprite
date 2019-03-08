@@ -18,7 +18,7 @@
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://dbpedia.org/ontology/">
-        <cc:license rdf:resource="http://www.gnu.org/copyleft/fdl.html"/>
+       <cc:license rdf:resource="http://www.gnu.org/copyleft/fdl.html"/>
         <dcterms:source rdf:resource="http://mappings.dbpedia.org"/>
         <vann:preferredNamespaceUri>http://dbpedia.org/ontology/</vann:preferredNamespaceUri>
         <dcterms:title xml:lang="en">The DBpedia Ontology</dcterms:title>
