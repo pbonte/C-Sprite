@@ -79,13 +79,13 @@ public class OntologyUtils {
 		return uri.substring(uri.lastIndexOf(findChar)+1,uri.length());
 	}
 	public static String strip(String uri, Map<String,String> prefixes){
-//		if(uri.startsWith("<")){
-//			uri = uri.substring(1);
-//		}
-//		if(uri.endsWith(">")){
-//			uri = uri.substring(0, uri.length()-1);
-//		}
-		uri = uri.substring(1, uri.length()-1);
+		if(uri.startsWith("<")){
+			uri = uri.substring(1);
+		}
+		if(uri.endsWith(">")){
+			uri = uri.substring(0, uri.length()-1);
+		}
+		//uri = uri.substring(1, uri.length()-1);
 		char findChar = '/';
 		if(uri.contains("#")){
 			findChar = '#';
