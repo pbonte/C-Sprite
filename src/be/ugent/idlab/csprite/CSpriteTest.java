@@ -35,108 +35,53 @@ public class CSpriteTest {
 			System.out.println("USAGE: <Ontology location> <triples file> <query concept>");
 			System.exit(1);
 		}
+		boolean openSocket=false;
 		String ontLoc = args[0];
 		String file= args[1];
 		String queryConcept = args[2];
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		// System.out.println("Reading file");
-		// try (Stream<String> stream =
-		// Files.lines(Paths.get("filtered234_type.nt"))) {
-		//
-		// stream.forEach(e -> memList.add(e));
-		//
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// System.out.println("Read file");
-		// OWLOntology ont = manager
-		// .loadOntologyFromOntologyDocument(classloader.getResourceAsStream(("dbpedia_stripped2.owl")));
-		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(args[0]));
-		// OWLOntology ont = manager
-		// .loadOntologyFromOntologyDocument(new
-		// File(("/tmp/dbpedia_test.owl")));
-		// find the top classes:
-
+		
+		//load the ontology
+		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(ontLoc));
+		
+		//create new C-Sprite engine
 		CSpriteEngine engine = new CSpriteEngine(ont);
+		//extract prefixes from registered query concept
 		String queryConceptStripped = OntologyUtils.strip(queryConcept, engine.prefixMapper);
+		//register the query
 		engine.addQuery(queryConceptStripped);
 		// engine.addQuery2("Property");
 		// engine.connectToSocket("ws://localhost:4000/stream");
 		long time1 = System.currentTimeMillis();
-		// for (int i = 0; i < memList.size(); i++) {
-		// final int j = i;
-		//// executor.submit(() -> {
-		//
-		// String input1 = memList.get(j);
-		// String[] split1 = input1.split(" ");
-		//
-		// engine.addTriple(split1[0], split1[1], split1[2]);
-		//// });
-		//
-		// }
-		// int runs = 100000;
-		// for(int i=0;i<runs;i++){
-		// engine.addTriple("test"+i,"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>","<http://dbpedia.org/ontology/Software>");
-		// engine.addTriple("test"+i,"<http://dbpedia.org/ontology/topProp","<test2>");
-		// engine.advanceTime(i);
-		// engine.addTriple("test"+i,"<http://dbpedia.org/ontology/topProp","<test3>");
-		// engine.addTriple("test"+i,"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>","<http://dbpedia.org/ontology/Software>");
-		// }
+		
 		long triples = 0;
+		//read the triples file line by line
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				triples++;
+				//split the triple in (s,p,o)
 				StringTokenizer st = new StringTokenizer(line, " ");
 				String subject = st.nextToken();
 				String prop = st.nextToken();
 				String object = st.nextToken();
+				//add triple to the engine
 				engine.addTriple(subject, prop, object);
+				//advance time (usefull for windowing)
 				engine.advanceTime(triples);
 			}
 		}
 		long difftime = System.currentTimeMillis() - time1;
-		System.out.println("throughput:\t" + triples * 1000 / difftime + "triples/s");
-		// while(!executor.getQueue().isEmpty()){
-		// try {
-		// Thread.sleep(1000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-		// engine.printDiff(10000*4);
-
-		// Runnable r = new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// WebSocketClient client = new WebSocketClient();
-		// StreamingWebSocketHandler socket = new
-		// StreamingWebSocketHandler(engine);
-		//
-		// try {
-		// client.start();
-		// ClientUpgradeRequest request = new ClientUpgradeRequest();
-		// client.connect(socket, new URI(args[0]), request);
-		// System.out.printf("Connecting to : %s%n", args[0]);
-		//
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-		// };
-		// Thread thread1 = new Thread(r);
-		// thread1.start();
-		FastStreamingWebSocketHandler socket = new FastStreamingWebSocketHandler(engine);
-		socket.start();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		System.out.println("throughput:\t" + triples * 1000 / difftime + " triples/s");
+		if(openSocket) {
+			FastStreamingWebSocketHandler socket = new FastStreamingWebSocketHandler(engine);
+			socket.start();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
