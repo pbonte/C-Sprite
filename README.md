@@ -1,6 +1,6 @@
 # C-Sprite
 
-How to run C-Sprite:
+How to use C-Sprite:
 
 ```
 USAGE: <Ontology location> <triples file> <query concept>
