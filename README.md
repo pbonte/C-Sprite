@@ -1,6 +1,16 @@
 # C-Sprite
 
-How to run CSprite with the DBPedia live stream experiment:
+How to run C-Sprite:
+
+```
+USAGE: <Ontology location> <triples file> <query concept>
+```
+With 
+* <Ontology location> the location of the ontology TBox.
+* <triples files> the location of the triples that need to be streamed. 
+* <query concept> the query that needs to be executed over the data stream. This should be a concept from the used ontology TBox.
+
+How to run C-Sprite with the DBPedia live stream experiment:
 1) mvn clean install
 2) unzip the triples.zip file in experiments/debs
 4) go to the target folder
