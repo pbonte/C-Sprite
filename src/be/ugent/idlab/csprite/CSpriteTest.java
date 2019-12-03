@@ -97,7 +97,7 @@ public class CSpriteTest {
 			}
 		}
 		long difftime = System.currentTimeMillis() - time1;
-		System.out.println("throughput:\t" + triples * 1000 / difftime);
+		System.out.println("throughput:\t" + triples * 1000 / difftime + "triples/s");
 		// while(!executor.getQueue().isEmpty()){
 		// try {
 		// Thread.sleep(1000);
