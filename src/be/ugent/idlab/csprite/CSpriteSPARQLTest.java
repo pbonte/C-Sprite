@@ -49,21 +49,25 @@ public class CSpriteSPARQLTest {
 	public static void main(String[] args)
 			throws OWLOntologyCreationException, URISyntaxException, FileNotFoundException, IOException {
 		if (args.length < 3) {
-			System.out.println("USAGE: <Ontology location> <input type (file|socket)> <triples file|socket url> <query file>  <windowSize> <windowSlide> <sleep (file)>");
+			System.out.println("USAGE: <Ontology location> <input type (file|socket)> <RDF format> <triples file|socket url> <query file>  <windowSize> <windowSlide> <sleep (file)>");
 			System.exit(1);
 		}
 		
 		String ontLoc = args[0];
 		INPUT inputType = INPUT.SOCKET;
+		RDFFORMAT format = RDFFORMAT.NTriples;
 		if(args[1].toLowerCase().contains("file")) {
 			inputType = INPUT.FILE;
 		}
-		String inputSource = args[2];
-		String queriesLoc = args[3];
-		int windowSize = Integer.parseInt(args[4]);
-		int windowSlide = Integer.parseInt(args[5]);
-		long sleep = Long.parseLong(args[6]);
-		RDFFORMAT format = RDFFORMAT.JSONLD;
+		if(args[2].toLowerCase().contains("json")) {
+			format = RDFFORMAT.JSONLD;
+		}
+		String inputSource = args[3];
+		String queriesLoc = args[4];
+		int windowSize = Integer.parseInt(args[5]);
+		int windowSlide = Integer.parseInt(args[6]);
+		long sleep = Long.parseLong(args[7]);
+		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		// load the ontology
