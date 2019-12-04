@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/pbonte/C-Sprite.svg?branch=master)](https://travis-ci.com/pbonte/C-Sprite)
 # C-Sprite
 
 How to use C-Sprite:
