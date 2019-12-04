@@ -78,6 +78,10 @@ public class OntologyUtils {
 		}
 		return uri.substring(uri.lastIndexOf(findChar)+1,uri.length());
 	}
+	public static String removeHooks(String uri) {
+		return uri.substring(1, uri.length()-1);
+		
+	}
 	public static String strip(String uri, Map<String,String> prefixes){
 		if(uri.startsWith("<")){
 			uri = uri.substring(1);
