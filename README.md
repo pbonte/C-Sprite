@@ -22,7 +22,7 @@ How to run C-Sprite with the DBPedia live stream experiment:
 1) mvn clean install
 2) unzip the triples.zip file in experiments/debs
 4) go to the target folder
-3) java -cp CSprite-0.0.2-SNAPSHOT-jar-with-dependencies.jar be.ugent.idlab.csprite.CSpriteSPARQLTest ../experiments/debs/dbpedia_strippedowl file ntriples ../experiments/debs/dbpedia_nolonglines.nt ../experiments/debs/queries.q 2 1 0
+3) java -cp CSprite-0.0.2-SNAPSHOT-jar-with-dependencies.jar be.ugent.idlab.csprite.CSpriteSPARQLTest ../experiments/debs/dbpedia_stripped3.owl file ntriples ../experiments/debs/dbpedia_nolonglines.nt ../experiments/debs/queries.q 2 1 0
 
 ## How to use C-Sprite with Type queries:
 
