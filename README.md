@@ -4,12 +4,18 @@
 How to use C-Sprite:
 
 ```
-USAGE: <Ontology location> <triples file> <query concept>
+USAGE: <Ontology location> <input type (file|socket)> <triples file|socket url> <query file>  <windowSize> <windowSlide> <sleep (file)>
+
 ```
 With 
+
 * <Ontology location> the location of the ontology TBox.
-* <triples files> the location of the triples that need to be streamed. 
-* <query concept> the query that needs to be executed over the data stream. This should be a concept from the used ontology TBox.
+* <input type (file|socket)> either file or socket. Depending if you read from file or a websocket.
+* <triples file|socket url> the location of the triples that need to be streamed if you read from file. Or the websocket url when you want to connect to a websocket.
+* <query file> a file containing SPARQL queries on each line. Make to remove the newlines in your query such that each query is on a separate line.
+* <windowSize> the size of the window
+* <windowSlide> the slide of window
+* <sleep> the sleep time between each line that needs to be read when reading from file. Use 0 when using the socket.
 
 How to run C-Sprite with the DBPedia live stream experiment:
 1) mvn clean install
