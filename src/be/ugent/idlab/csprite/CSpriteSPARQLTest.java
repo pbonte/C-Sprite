@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.jena.query.Dataset;
@@ -45,13 +47,17 @@ public class CSpriteSPARQLTest {
 	public static void main(String[] args)
 			throws OWLOntologyCreationException, URISyntaxException, FileNotFoundException, IOException {
 		if (args.length < 3) {
-			System.out.println("USAGE: <Ontology location> <triples file> <sleep>");
+			System.out.println("USAGE: <Ontology location> <triples file> <query file> <sleep> <windowSize> <windowSlide>");
 			System.exit(1);
 		}
+		
 		boolean openSocket = false;
 		String ontLoc = args[0];
 		String file = args[1];
-		long sleep = Long.parseLong(args[2]);
+		String queriesLoc = args[2];
+		long sleep = Long.parseLong(args[3]);
+		int windowSize = Integer.parseInt(args[4]);
+		int windowSlide = Integer.parseInt(args[5]);
 		RDFFORMAT format = RDFFORMAT.JSONLD;
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
@@ -60,13 +66,13 @@ public class CSpriteSPARQLTest {
 
 		// create new C-Sprite engine
 		CSpriteSPARQLEngine engine = new CSpriteSPARQLEngine(ont);
-
+		//read the queries
+		List<String> queries = readQueries(queriesLoc);
+		for(String queryStr:queries) {
+			engine.registerQuery(queryStr, windowSize, windowSlide);
+		}
 		// register query
-		engine.registerQuery(created, 3, 1);
-		engine.registerQuery(del, 3, 1);
-		engine.registerQuery(modif, 3, 1);
-		engine.registerQuery(ren, 3, 1);
-		engine.registerQuery(copy, 3, 1);
+		
 
 		// engine.addQuery2("Property");
 		// engine.connectToSocket("ws://localhost:4000/stream");
@@ -164,207 +170,20 @@ public class CSpriteSPARQLTest {
 			e.printStackTrace();
 		}
 	}
-	public static final String created = 
-			"PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"+
-			"PREFIX file: <http://w3id.org/sepses/vocab/unix-event#> " +
-			"PREFIX fae: <http://w3id.org/sepses/event/file-access#> " +
-			"PREFIX sys: <http://w3id.org/sepses/example/system-knowledge#> " +
-			"PREFIX eve: <http://w3id.org/sepses/resource/event#> " +
-            "CONSTRUCT {"
-                    + "?subject fae:hasFileAccessType sys:Created;"
-            		+ "         rdf:type fae:FileAccessEvent;"
-            		+ "         fae:timestamp ?logtimestamp;"
-            		+ "         fae:stimestamp ?logtimestamp;"
-            		+ "         fae:hasSourceFile ?sourceFile;"
-            		+ "         fae:hasTargetFile ?targetFile;"
-            		+ "         fae:hasSourceHost ?sourceHost;"
-            		+ "         fae:hasTargetHost ?targetHost;"		
-            		+ "         fae:hasUser ?user ."	
-            		+ "?sourceFile   fae:fileName ?filename ."
-            		+ "?targetFile   fae:fileName ?filename ."
-            		+ "?sourceHost   fae:hostName ?hostname ."
-            		+ "?targetHost   fae:hostName ?hostname ."
-            		+ "?user   		 fae:userName ?username"
-            		+ "}"+
-           
-            "WHERE { "+
-	             		 "?s file:pathName ?filename . " +
-			             "?s file:hostName ?hostname . " +
-			             "?s file:generatedAtTime ?logtimestamp . " +
-			             "?s file:userName ?username ."+
-			             "?s file:eventName ?event ."+
-			           "FILTER (regex(str(?event),\"created\")) "   
-	             + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"event\"),\"-created\")) AS ?subject)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-file\"),\"-created\")) AS ?sourceFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-file\"),\"-created\")) AS ?targetFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-host\"),\"-created\")) AS ?sourceHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-host\"),\"-created\")) AS ?targetHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"user\"),\"-created\")) AS ?user)"+
-            "}";
-	
-	public static final String del = 
-			"PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"+
-			"PREFIX file: <http://w3id.org/sepses/vocab/unix-event#> " +
-			"PREFIX fae: <http://w3id.org/sepses/event/file-access#> " +
-			"PREFIX sys: <http://w3id.org/sepses/example/system-knowledge#> " +
-			"PREFIX eve: <http://w3id.org/sepses/resource/event#> " +
-            "CONSTRUCT {"
-                    + "?subject fae:hasFileAccessType sys:Deleted;"
-                    + "         rdf:type fae:FileAccessEvent;"
-            		+ "         fae:timestamp ?logtimestamp;"
-            		+ "         fae:stimestamp ?logtimestamp;"
-            		+ "         fae:hasSourceFile ?sourceFile;"
-            		+ "         fae:hasTargetFile ?targetFile;"
-            		+ "         fae:hasSourceHost ?sourceHost;"
-            		+ "         fae:hasTargetHost ?targetHost;"		
-            		+ "         fae:hasUser ?user ."	
-            		+ "?sourceFile   fae:fileName ?filename ."
-            		+ "?targetFile   fae:fileName ?filename ."
-            		+ "?sourceHost   fae:hostName ?hostname ."
-            		+ "?targetHost   fae:hostName ?hostname ."
-            		+ "?user   		 fae:userName ?username"
-            		+ "}"+
-                 
-            "WHERE {" +
-             "?s file:pathName ?filename . " +
-             "?s file:hostName ?hostname . " +
-             "?s file:eventName ?event ."+
-             "?s file:userName ?username ."+
-             "?s file:timestamp ?logtimestamp . " +
-            "FILTER regex(str(?event),\"deleted\")"+
-            "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"event\"),\"-deleted\")) AS ?subject)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-file\"),\"-deleted\")) AS ?sourceFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-file\"),\"-deleted\")) AS ?targetFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-host\"),\"-deleted\")) AS ?sourceHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-host\"),\"-deleted\")) AS ?targetHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"user\"),\"-deleted\")) AS ?user)"
-            + "}";
-	
-	public static final String modif = 
-			"PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"+
-			"PREFIX file: <http://w3id.org/sepses/vocab/unix-event#> " +
-			"PREFIX fae: <http://w3id.org/sepses/event/file-access#> " +
-			"PREFIX sys: <http://w3id.org/sepses/example/system-knowledge#> " +
-			"PREFIX eve: <http://w3id.org/sepses/resource/event#> " +
-            "CONSTRUCT {"
-                    + "?subject fae:hasFileAccessType sys:Modified;"
-            		+ "         rdf:type fae:FileAccessEvent;"
-            		+ "         fae:timestamp ?logtimestamp;"
-            		+ "         fae:stimestamp ?logtimestamp;"
-            		+ "         fae:hasSourceFile ?sourceFile;"
-            		+ "         fae:hasTargetFile ?targetFile;"
-            		+ "         fae:hasSourceHost ?sourceHost;"
-            		+ "         fae:hasTargetHost ?targetHost;"	
-            		+ "         fae:hasUser ?user ."	
-            		+ "?sourceFile   fae:fileName ?filename ."
-            		+ "?targetFile   fae:fileName ?filename ."
-            		+ "?sourceHost   fae:hostName ?hostname ."
-            		+ "?targetHost   fae:hostName ?hostname ."
-            		+ "?user   		 fae:userName ?username"
-            		+ "}"+
-            "WHERE { "+
-	             		 "?s file:pathName ?filename . " +
-			             "?s file:hostName ?hostname . " +
-			             "?s file:timestamp ?logtimestamp . " +
-			             "?s file:eventName ?event ."+
-			             "?s file:userName ?username ."+
-			           "FILTER (regex(str(?event),\"updated\")) "
-	        + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"event\"),\"-modified\")) AS ?subject)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-file\"),\"-modified\")) AS ?sourceFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-file\"),\"-modified\")) AS ?targetFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-host\"),\"-modified\")) AS ?sourceHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-host\"),\"-modified\")) AS ?targetHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"user\"),\"-modified\")) AS ?user)"+
-            "}";
-          
-	public static final String ren =
-			"PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"+
-			"PREFIX file: <http://w3id.org/sepses/vocab/unix-event#> " +
-			"PREFIX fae: <http://w3id.org/sepses/event/file-access#> " +
-			"PREFIX sys: <http://w3id.org/sepses/example/system-knowledge#> " +
-			"PREFIX eve: <http://w3id.org/sepses/resource/event#> " +
-            "CONSTRUCT {"
-                    + "?subject fae:hasFileAccessType sys:Renamed;"
-            		+ "         rdf:type fae:FileAccessEvent;"
-            		+ "         fae:timestamp ?logtimestamp;"
-            		+ "         fae:hasSourceFile ?sourceFile;"
-            		+ "         fae:hasTargetFile ?targetFile;"
-            		+ "         fae:hasSourceHost ?sourceHost;"
-            		+ "         fae:hasTargetHost ?targetHost;"	
-            		+ "         fae:hasUser ?user ."	
-
-            		+ "?sourceFile   fae:fileName ?filename ."
-            		+ "?targetFile   fae:fileName ?filename2 ."
-            		+ "?sourceHost   fae:hostName ?hostname ."
-            		+ "?targetHost   fae:hostName ?hostname2 ."
-            		+ "?user   		 fae:userName ?username ."
-            		+ "}"+
-                 
-            "WHERE {"+
-		            "?s file:pathName ?filename2 . " +
-		            "?s file:hostName ?hostname2 . " +
-		            "?s file:timestamp ?logtimestamp . " +
-		            "?s file:userName ?username ."+
-		            "?s file:eventName ?event2 ."+
-			             "{SELECT * WHERE {" +
-				             "?r file:pathName ?filename . " +
-				             "?r file:hostName ?hostname . " +
-				             "?r file:timestamp ?logtimestamp2 . " +
-				             "?r file:eventName ?event"+
-			            " FILTER regex(str(?event),\"moved\")}}"+
-		            " FILTER (regex(str(?event2),\"created\") && ?filename!=?filename2 && ?hostname=?hostname2 )"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"event\"),\"-renamed\")) AS ?subject)"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-file\"),\"-renamed\")) AS ?sourceFile)"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-file\"),\"-renamed\")) AS ?targetFile)"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"source-host\"),\"-renamed\")) AS ?sourceHost)"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"target-host\"),\"-renamed\")) AS ?targetHost)"
-		            + "BIND (URI(CONCAT(REPLACE(str(?s),\"LogEntry\",\"user\"),\"-renamed\")) AS ?user)"
-            + "}";
-            
-	
-	public static final String copy = 
-			"PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"+
-			"PREFIX file: <http://w3id.org/sepses/vocab/unix-event#> " +
-			"PREFIX fae: <http://w3id.org/sepses/event/file-access#> " +
-			"PREFIX sys: <http://w3id.org/sepses/example/system-knowledge#> " +
-			"PREFIX eve: <http://w3id.org/sepses/resource/event#> " +
-			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "+
-            "CONSTRUCT {"
-                    + "?subject fae:hasFileAccessType sys:Copied;"
-            		+ "         rdf:type fae:FileAccessEvent;"
-            		+ "         fae:timestamp ?logtimestamp;"
-            		+ "         fae:stimestamp ?logtimestamp2;" 
-            		+ "         fae:hasSourceFile ?sourceFile;"
-            		+ "         fae:hasTargetFile ?targetFile;"
-            		+ "         fae:hasSourceHost ?sourceHost;"
-            		+ "         fae:hasTargetHost ?targetHost;"	
-            		+ "         fae:hasUser ?user ."	
-            		+ "?sourceFile   fae:fileName ?filename ."
-            		+ "?targetFile   fae:fileName ?filename2 ."
-            		+ "?sourceHost   fae:hostName ?hostname ."
-            		+ "?targetHost   fae:hostName ?hostname2 ."
-            		+ "?user   		 fae:userName ?username"
-            		+ "}"+
-            "WHERE { "+
-	             "?s file:pathName ?filename . " +
-	             "?s file:hostName ?hostname . " +
-	             "?s file:timestamp ?logtimestamp2 . " +
-	             "?s file:eventName ?event ."+
-	             "{SELECT * WHERE {"+
-	             		 "?r file:pathName ?filename2 . " +
-			             "?r file:hostName ?hostname2 . " +
-			             "?r file:timestamp ?logtimestamp . " +
-			             "?r file:eventName ?event2 ."+
-			             "?r file:userName ?username ."+
-			           "FILTER (regex(str(?event2),\"created\")) "+    
-	              "}}"+
-	            "FILTER (regex(str(?event),\"IN_OPEN\") && ?filename2!=?filename && ?hostname=?hostname2 && substr(str(?logtimestamp),21) <= substr(str(?logtimestamp2),21) ) "
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"event\"),\"-copied\")) AS ?subject)"
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"source-file\"),\"-copied\")) AS ?sourceFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"target-file\"),\"-copied\")) AS ?targetFile)"
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"source-host\"),\"-copied\")) AS ?sourceHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"target-host\"),\"-copied\")) AS ?targetHost)"
-            + "BIND (URI(CONCAT(REPLACE(str(?r),\"LogEntry\",\"user\"),\"-copied\")) AS ?user)"+
-            "}";
+	public static List<String> readQueries(String fileLocation ){
+		
+		List<String> queries = new ArrayList<String>();
+		try (BufferedReader br = new BufferedReader(new FileReader(fileLocation))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				if(!line.equals("")) {
+					queries.add(line);
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return queries;
+	}
 
 }
