@@ -9,14 +9,14 @@ USAGE: <Ontology location> <input type (file|socket)> <triples file|socket url> 
 ```
 With 
 
-* Ontology location: the location of the ontology TBox.
-* input type (file|socket): either file or socket. Depending if you read from file or a websocket.
-* triples file|socket url: the location of the triples that need to be streamed if you read from file. Or the websocket url when you want to connect to a websocket.
-* rdf type (ntriples|json-ld): the RDF serialization, either json-ld or N-triples are currently supported.
-* query file: a file containing SPARQL queries on each line. Make to remove the newlines in your query such that each query is on a separate line.
-* windowSize: the size of the window
-* windowSlide: the slide of window
-* sleep: the sleep time between each line that needs to be read when reading from file. Use 0 when using the socket.
+* _Ontology location_: the location of the ontology TBox.
+* _input type (file|socket)_: either file or socket. Depending if you read from file or a websocket.
+* _triples file|socket url_: the location of the triples that need to be streamed if you read from file. Or the websocket url when you want to connect to a websocket.
+* _rdf type (ntriples|json-ld)_: the RDF serialization, either json-ld or N-triples are currently supported.
+* _query file_: a file containing SPARQL queries on each line. Make to remove the newlines in your query such that each query is on a separate line.
+* _windowSize_: the size of the window
+* _windowSlide_: the slide of window
+* _sleep_: the sleep time between each line that needs to be read when reading from file. Use 0 when using the socket.
 
 How to run C-Sprite with the DBPedia live stream experiment:
 1) mvn clean install
