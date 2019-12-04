@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jena.rdf.model.Statement;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import be.ugent.idlab.csprite.parser.HierarchyGenerator;

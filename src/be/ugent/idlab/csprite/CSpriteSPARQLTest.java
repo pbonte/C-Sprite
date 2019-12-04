@@ -30,7 +30,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import be.ugent.idlab.csprite.networking.FastStreamingWebSocketHandler;
 import be.ugent.idlab.csprite.networking.StreamingWebSocketHandler;
+import be.ugent.idlab.csprite.networking.WebSocketClientSource;
 import be.ugent.idlab.csprite.sparql.CSpriteSPARQLEngine;
 import be.ugent.idlab.csprite.utils.OntologyUtils;
 
@@ -43,21 +45,24 @@ public class CSpriteSPARQLTest {
 	public enum RDFFORMAT {
 		NTriples, JSONLD
 	};
-
+	public enum INPUT {FILE, SOCKET};
 	public static void main(String[] args)
 			throws OWLOntologyCreationException, URISyntaxException, FileNotFoundException, IOException {
 		if (args.length < 3) {
-			System.out.println("USAGE: <Ontology location> <triples file> <query file> <sleep> <windowSize> <windowSlide>");
+			System.out.println("USAGE: <Ontology location> <input type (file|socket)> <triples file|socket url> <query file>  <windowSize> <windowSlide> <sleep (file)>");
 			System.exit(1);
 		}
 		
-		boolean openSocket = false;
 		String ontLoc = args[0];
-		String file = args[1];
-		String queriesLoc = args[2];
-		long sleep = Long.parseLong(args[3]);
+		INPUT inputType = INPUT.SOCKET;
+		if(args[1].toLowerCase().contains("file")) {
+			inputType = INPUT.FILE;
+		}
+		String inputSource = args[2];
+		String queriesLoc = args[3];
 		int windowSize = Integer.parseInt(args[4]);
 		int windowSlide = Integer.parseInt(args[5]);
+		long sleep = Long.parseLong(args[6]);
 		RDFFORMAT format = RDFFORMAT.JSONLD;
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
@@ -71,28 +76,14 @@ public class CSpriteSPARQLTest {
 		for(String queryStr:queries) {
 			engine.registerQuery(queryStr, windowSize, windowSlide);
 		}
-		// register query
 		
-
-		// engine.addQuery2("Property");
-		// engine.connectToSocket("ws://localhost:4000/stream");
 		long time1 = System.currentTimeMillis();
 
 		long triples = 0;
-//		for (int i = 0; i < 100; i++) {
-//			engine.addTriple("http://dbpedia.org/resource/single" + i + "",
-//					"http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://dbpedia.org/ontology/Single");
-//			engine.addTriple("http://dbpedia.org/resource/software" + i + "",
-//					"http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://dbpedia.org/ontology/Software");
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//		}
+
 		// read the triples file line by line
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+		if(inputType == INPUT.FILE) {
+		try (BufferedReader br = new BufferedReader(new FileReader(inputSource))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (format == RDFFORMAT.NTriples) {
@@ -129,47 +120,14 @@ public class CSpriteSPARQLTest {
 
 		long difftime = System.currentTimeMillis() - time1 + 1;
 		System.out.println("throughput:\t" + triples * 1000 / difftime + " triples/s");
-//		if (openSocket) {
-//			FastStreamingWebSocketHandler socket = new FastStreamingWebSocketHandler(engine);
-//			socket.start();
-//			try {
-//				Thread.sleep(2000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-	}
-
-	public void connectToSocket(String url, CSpriteEngine engine) {
-		Runnable r = new Runnable() {
-
-			@Override
-			public void run() {
-				WebSocketClient client = new WebSocketClient();
-				StreamingWebSocketHandler socket = new StreamingWebSocketHandler(engine);
-
-				try {
-					client.start();
-					ClientUpgradeRequest request = new ClientUpgradeRequest();
-					client.connect(socket, new URI(url), request);
-					System.out.printf("Connecting to : %s%n", url);
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		Thread thread1 = new Thread(r);
-		thread1.start();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else if(inputType == INPUT.SOCKET) {
+			WebSocketClientSource wsSource = new WebSocketClientSource(inputSource,engine);
+			wsSource.stream();
 		}
+
 	}
+
+
 	public static List<String> readQueries(String fileLocation ){
 		
 		List<String> queries = new ArrayList<String>();
