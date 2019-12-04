@@ -43,7 +43,7 @@ public class HierarchyInjection {
 		OWLOntology ont = manager
 				.loadOntologyFromOntologyDocument(new File(ontologyFile));
 		HierarchyGenerator gen = new HierarchyGenerator(ont);
-		String query = OntologyUtils.strip(args[1], gen.getPrefixes());
+		String query = OntologyUtils.strip(args[1], gen);
 		Map<String,String>  reversedPrefixes = gen.getReveserdPrefixes();
 		HashSet<String> supertypes = gen.getSupTypes(query);
 		Map<String, List<String>> allSuperTypes = gen.getSuperTypes();
@@ -52,7 +52,7 @@ public class HierarchyInjection {
 		    while ((line = br.readLine()) != null) {
 		       // process the line.
 		    	String[] triple = line.split(" ");
-		    	String concept = OntologyUtils.strip(triple[2], gen.getPrefixes());
+		    	String concept = OntologyUtils.strip(triple[2], gen);
 		    	 if(supertypes.contains(concept)){
 		    		 //System.out.println(line);
 		    		 //System.out.println(allSuperTypes.get(concept));

@@ -28,12 +28,13 @@ import org.apache.jena.reasoner.rulesys.Rule;
 public class JenaQueryEngine {
 	private Model infModel;
 	private List<Query> queries;
+	private String queryID;
 
 	
-	public JenaQueryEngine(){
+	public JenaQueryEngine(String queryID){
 		Model dataModel = ModelFactory.createDefaultModel();
 		this.infModel = dataModel;
-
+		this.queryID = queryID;
 	}
 	
 	public void addContinuousQuery(String queryString){
@@ -80,14 +81,13 @@ public class JenaQueryEngine {
 		}else{
 			try (QueryExecution qexec = QueryExecutionFactory.create(query, infModel)) {
 				Model result = qexec.execConstruct();
-				System.out.println("triples: " +result.size());
-				System.out.println(this + " " + result);
+				System.out.println(queryID + " " + result);
 			}
 		}
 		}
 		//remove all statements
 		infModel.removeAll();
-		System.out.println("#Results:\t"+ counter);
+		
 		return results;
 	}
 

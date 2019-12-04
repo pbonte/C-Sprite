@@ -47,7 +47,7 @@ public class CSpriteTest {
 		//create new C-Sprite engine
 		CSpriteEngine engine = new CSpriteEngine(ont);
 		//extract prefixes from registered query concept
-		String queryConceptStripped = OntologyUtils.strip(queryConcept, engine.prefixMapper);
+		String queryConceptStripped = OntologyUtils.strip(queryConcept, engine.hierarchyGen);
 		//register the query
 		engine.addQuery(queryConceptStripped);
 		// engine.addQuery2("Property");

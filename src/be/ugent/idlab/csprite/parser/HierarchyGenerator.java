@@ -179,6 +179,9 @@ public class HierarchyGenerator {
 		
 		return tempCounter+"_"+removeSpecialChars(stripped);
 	}
+	public static char getNextCounter() {
+		return counter++;
+	}
 	public static String removeSpecialChars(String uri){
 		String result= uri;
 		result = result.replaceAll("%", "");

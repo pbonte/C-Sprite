@@ -18,42 +18,45 @@ import java.util.Queue;
 public class ConceptHandler {
 
 	private ConceptTree conceptTree;
-	private Map<String,List<String>> superTypes;
+	private Map<String, List<String>> superTypes;
 
 	public ConceptHandler(String root) {
 		this.conceptTree = new ConceptTree(root);
 	}
 
-
 	public void add(String concept, String superConcept) {
 		conceptTree.addConcept(concept, superConcept);
 	}
 
-
-	public HashSet<String> getSubsTypes(String superType){
+	public HashSet<String> getSubsTypes(String superType) {
 		HashSet<String> subTypes = new HashSet<String>();
 		ConceptNode root = conceptTree.getNode(superType);
-		subTypes.add(root.getConcept());
-		//traverse tree to find
-		Queue<ConceptNode> queue = new LinkedList<ConceptNode>();
-		queue.add(root);
-		HashSet<ConceptNode> visited = new HashSet<ConceptNode>();
-		visited.add(root);
-		while (!queue.isEmpty()) {
-			ConceptNode node = queue.remove();
-			for (ConceptNode child : node.getChilderen()) {
-				if (!visited.contains(child)) {
-					subTypes.add(child.getConcept());
-					queue.add(child);
+		if (root != null) {
+			subTypes.add(root.getConcept());
+			// traverse tree to find
+			Queue<ConceptNode> queue = new LinkedList<ConceptNode>();
+			queue.add(root);
+			HashSet<ConceptNode> visited = new HashSet<ConceptNode>();
+			visited.add(root);
+			while (!queue.isEmpty()) {
+				ConceptNode node = queue.remove();
+				for (ConceptNode child : node.getChilderen()) {
+					if (!visited.contains(child)) {
+						subTypes.add(child.getConcept());
+						queue.add(child);
+					}
 				}
-			}
 
+			}
+		}else {
+			subTypes.add(superType);
 		}
 		return subTypes;
 	}
-	public Map<String,List<String>> getSuperTypes() {
+
+	public Map<String, List<String>> getSuperTypes() {
 		// BFS uses Queue data structure
-		Map<String,List<String>> superTypes = new HashMap<String,List<String>>();
+		Map<String, List<String>> superTypes = new HashMap<String, List<String>>();
 		Queue<ConceptNode> queue = new LinkedList<ConceptNode>();
 		queue.add(conceptTree.getRoot());
 		HashSet<ConceptNode> visited = new HashSet<ConceptNode>();
@@ -62,11 +65,11 @@ public class ConceptHandler {
 			ConceptNode node = queue.remove();
 			for (ConceptNode child : node.getChilderen()) {
 				if (!visited.contains(child)) {
-					if(!superTypes.containsKey(child.getConcept())){
+					if (!superTypes.containsKey(child.getConcept())) {
 						superTypes.put(child.getConcept(), new ArrayList<String>());
 					}
 					superTypes.get(child.getConcept()).add(node.getConcept());
-					if(superTypes.containsKey(node.getConcept())){
+					if (superTypes.containsKey(node.getConcept())) {
 						superTypes.get(child.getConcept()).addAll(superTypes.get(node.getConcept()));
 					}
 					queue.add(child);

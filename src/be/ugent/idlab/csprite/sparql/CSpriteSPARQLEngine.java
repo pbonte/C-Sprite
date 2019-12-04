@@ -2,6 +2,7 @@ package be.ugent.idlab.csprite.sparql;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.syntax.ElementWalker;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -33,7 +34,7 @@ public class CSpriteSPARQLEngine {
 			engine.addPropertyQuery(queryProp, queryID);
 		}
 		//register a jena SPARQL engine
-		JenaQueryEngine jena = new JenaQueryEngine();
+		JenaQueryEngine jena = new JenaQueryEngine(queryID);
 		jena.addContinuousQuery(query);
 		//register a window
 		EsperWindow window = new EsperWindow(windowSize, windowSlide, jena);
@@ -41,6 +42,11 @@ public class CSpriteSPARQLEngine {
 	}
 	public void addTriple(String subject, String property, String object) {
 		this.engine.addTriple(subject, property, object);
+	}
+	public void addTriple(Statement statement) {
+		this.engine.addTriple(statement.asTriple().getSubject().getURI(),
+				statement.asTriple().getPredicate().getURI(),
+				statement.asTriple().getObject().toString());
 	}
 
 }

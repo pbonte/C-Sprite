@@ -4,3 +4,4 @@
 target/*
 resources/catalog-v001.xml
 experiments/debs/dbpedia_nolonglines.nt
+experiments/sepses/*

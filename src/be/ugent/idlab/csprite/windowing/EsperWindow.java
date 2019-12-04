@@ -46,8 +46,8 @@ public class EsperWindow {
 				public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 					if (newEvents != null){
 						
-						System.out.println("IN:\t"+System.currentTimeMillis());
-						System.out.println("#events:\t"+newEvents.length);
+//						System.out.println("IN:\t"+System.currentTimeMillis());
+//						System.out.println("#events:\t"+newEvents.length);
 						for (EventBean e : newEvents) {
 							jena.setupSimpleAdd((String)e.get("s"),(String)e.get("p"),(String)e.get("o"));
 							//builder.append((String) e.get("triples"));

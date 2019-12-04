@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jena.rdf.model.Statement;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import be.ugent.idlab.csprite.parser.HierarchyGenerator;
@@ -59,7 +60,7 @@ public class CSpriteEngine {
 		}
 	}
 	public boolean addConceptQuery(String superType, String queryID) {
-		String queryConceptStripped = OntologyUtils.strip(superType, prefixMapper);
+		String queryConceptStripped = OntologyUtils.strip(superType, hierarchyGen);
 		HashSet<String> supertypes = hierarchyGen.getSupTypes(queryConceptStripped);
 		if (supertypes != null && !supertypes.isEmpty()) {			
 			for (String s : supertypes) {
@@ -77,7 +78,7 @@ public class CSpriteEngine {
 		queryWindowMapping.put(queryID, window);
 	}
 	public boolean addPropertyQuery(String superProp, String queryID) {
-		String queryPropStripped = OntologyUtils.strip(superProp, prefixMapper);
+		String queryPropStripped = OntologyUtils.strip(superProp, hierarchyGen);
 		HashSet<String> supertypes = hierarchyGen.getSupProperties(queryPropStripped);
 		if (supertypes != null && !supertypes.isEmpty()) {
 			for (String s : supertypes) {
@@ -111,29 +112,24 @@ public class CSpriteEngine {
 	public void advanceTime(long time) {
 
 	}
+
 	public void addTriple(String subject, String property, String object) {
 		if (property.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
 
-			String concept = OntologyUtils.strip(object, prefixMapper);
+			String concept = OntologyUtils.strip(object, hierarchyGen);
 			
-//			if (supertypes.containsKey(concept) || supertprops.containsKey(property)) {
-//				System.out.println("Match: " + subject);
-//
-//				hits++;
-//			}
+
 			List<QueryPair> queryIDs = supertypes.get(concept);
 			if(queryIDs!=null) {
-				//System.out.println("Match: " + subject + " queryID: " + queryIDs);
 				for(QueryPair queryPair  :queryIDs) {
 					queryWindowMapping.get(queryPair.getQueryID()).addEvent(subject, property, queryPair.getConcept());
 				}
 				hits++;
 			}
 		}else {
-			String concept = OntologyUtils.strip(property, prefixMapper);
+			String concept = OntologyUtils.strip(property, hierarchyGen);
 			List<QueryPair> queryIDs = supertprops.get(concept);
 			if(queryIDs!=null) {
-				//System.out.println("Match: " + subject + " queryID: " + queryIDs);
 				for(QueryPair queryPair  :queryIDs) {
 					queryWindowMapping.get(queryPair.getQueryID()).addEvent(subject, queryPair.getConcept(), object);
 				}

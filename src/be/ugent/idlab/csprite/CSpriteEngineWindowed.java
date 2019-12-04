@@ -30,7 +30,7 @@ public class CSpriteEngineWindowed extends CSpriteEngine {
 		long time1 = System.nanoTime();
 		if (property.equals("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")) {
 
-			String concept = OntologyUtils.strip(object, prefixMapper);
+			String concept = OntologyUtils.strip(object, hierarchyGen);
 
 			if (supertypes.containsKey(concept)) {
 				System.out.println("Match: " + subject);
@@ -42,7 +42,7 @@ public class CSpriteEngineWindowed extends CSpriteEngine {
 			}
 			
 		} else {
-			String concept = OntologyUtils.strip(property, prefixMapper);
+			String concept = OntologyUtils.strip(property, hierarchyGen);
 
 			if (supertprops.containsKey(concept)) {
 				joinWindow.addEvent(

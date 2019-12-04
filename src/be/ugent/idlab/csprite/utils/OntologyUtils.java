@@ -15,6 +15,8 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import be.ugent.idlab.csprite.parser.HierarchyGenerator;
+
 /**
  * @author pbonte
  *
@@ -82,7 +84,7 @@ public class OntologyUtils {
 		return uri.substring(1, uri.length()-1);
 		
 	}
-	public static String strip(String uri, Map<String,String> prefixes){
+	public static String strip(String uri, HierarchyGenerator hierarch){
 		if(uri.startsWith("<")){
 			uri = uri.substring(1);
 		}
@@ -97,9 +99,11 @@ public class OntologyUtils {
 		String prefix = uri.substring(0,uri.lastIndexOf(findChar));
 		String stripped = uri.substring(uri.lastIndexOf(findChar) + 1, uri.length());
 		String smallPrefix="";
-		if(prefixes.containsKey(prefix)){
-			smallPrefix=prefixes.get(prefix);
-		}
+		if(!hierarch.getPrefixes().containsKey(prefix)){
+			hierarch.getPrefixes().put(prefix,hierarch.getNextCounter()+"");
+		}	
+		smallPrefix=hierarch.getPrefixes().get(prefix);
+		
 		return smallPrefix+"_"+removeSpecialChars(stripped);
 		
 	}
@@ -127,8 +131,8 @@ public class OntologyUtils {
 //		}
 		return strip(uri);
 	}
-	public static String encode(String uri,Map<String,String> prefixes){
-		return strip(uri,prefixes);
+	public static String encode(String uri,HierarchyGenerator hierarch){
+		return strip(uri, hierarch);
 	}
 	public static String decode(String uri){
 		try {
