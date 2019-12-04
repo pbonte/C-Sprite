@@ -3,15 +3,11 @@
  */
 package be.ugent.idlab.csprite;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.StringTokenizer;
-
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -21,7 +17,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import be.ugent.idlab.csprite.networking.StreamingWebSocketHandler;
 import be.ugent.idlab.csprite.sparql.CSpriteSPARQLEngine;
-import be.ugent.idlab.csprite.utils.OntologyUtils;
 
 /**
  * @author pbonte
