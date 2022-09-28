@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/pbonte/C-Sprite.svg?branch=master)](https://travis-ci.com/pbonte/C-Sprite)
 # C-Sprite
 
-C-Sprite is an RDF stream processing engine to perform efficient hierarchical reasoning. All the technical details can be found [here](https://biblio.ugent.be/publication/8635009/file/8635011).
+C-Sprite is an RDF stream processing engine to perform efficient hierarchical reasoning. All the technical details can be found [here](https://core.ac.uk/download/pdf/275703748.pdf).
 
 ## How to use C-Sprite with SPARQL queries:
 
